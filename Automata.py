@@ -7,13 +7,13 @@ class Automata:
         self.position=position
         
         
-    def get_status(self):
+    def getEstados(self):
         return self.status
     
-    def get_transitions(self):
+    def getTransiciones(self):
         return self.transitions
     
-    def get_initial_status(self):
+    def getEstado(self):
         return self.initial_status
     
     def get_final_status(self):

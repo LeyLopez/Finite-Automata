@@ -3,34 +3,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Autómota"
-msgstr "Automaton"
+msgstr "Autómato"
 
 msgid "Verificar palabra"
-msgstr "Verify word"
+msgstr "Verificar palavra"
 
 msgid "Verificar"
-msgstr "Verify"
+msgstr "Verificar"
 
 msgid "Resultado"
-msgstr "Result"
+msgstr "Resultado"
 
 msgid "Velocidad"
-msgstr "Speed"
+msgstr "Velocidade"
 
 msgid "La palabra es aceptada"
-msgstr "The word is accepted"
+msgstr "a palavra é aceite"
 
 msgid "La palabra no es aceptada"
-msgstr "The word is not accepted"
+msgstr "a palavra não é aceite"
 
 msgid "Idiomas"
-msgstr "Languages"
+msgstr "Línguas"
 
 msgid "Inglés"
-msgstr "English"
+msgstr "Inglês"
 
 msgid "Portugués"
-msgstr "Portuguese"
+msgstr "Português"
 
 msgid "Español"
-msgstr "Spanish"
+msgstr "Espanhol"

@@ -55,11 +55,13 @@ class Interface(QMainWindow):
 
         # NOMBRE Y TAMAÑO DE LA VENTANA
         self.setWindowTitle(_("Autómata"))
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 600,600)
+        self.setStyleSheet("background-color: lavender; color: black")
 
         # WIDGET PRNCIPAL
         widget = QWidget()
         self.setCentralWidget(widget)
+
 
         # ACTUALIZAR EL MENU DE IDIOMAS
         if self.languages_menu:
@@ -67,6 +69,8 @@ class Interface(QMainWindow):
 
         # BARRA DE MENU PARA CAMBIAR IDIOMA
         menu_bar = self.menuBar()
+        menu_bar.setStyleSheet("color: red; font-weight:bold")
+
 
         if not self.languages_menu:
 
@@ -83,7 +87,7 @@ class Interface(QMainWindow):
 
         if not self.portugues_action:
 
-            self.portugues_action = QAction(_("Francés"), self)
+            self.portugues_action = QAction(_("Portugués"), self)
             self.languages_menu.addAction(self.portugues_action)
             self.portugues_action.setCheckable(True)
             self.languages_group.addAction(self.portugues_action)
@@ -105,26 +109,32 @@ class Interface(QMainWindow):
         widget.setLayout(layout)
 
         # QLABEL PARA MOSTRAR MENSAJE
-        speed_label = QLabel(_("Verificar palabra"))
-        layout.addWidget(speed_label )
+        string_label = QLabel(_("Verificar palabra"))
+        layout.addWidget(string_label )
+        string_label.setStyleSheet("font-size:15px; font-weight: bold; color: red")
 
         # QLINEEDIT PARA INGRESAR LA CADENA
         self.string_linee = QLineEdit()
         layout.addWidget(self.string_linee)
+        self.string_linee.setStyleSheet("background:white; color: black")
+        
 
-        string_label = QLabel(_("Velocidad"))
-        layout.addWidget(string_label)
+        speed_label = QLabel(_("Velocidad"))
+        layout.addWidget(speed_label)
+        speed_label.setStyleSheet("font-size:15px; font-weight: bold; color: red")
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(1)
         self.slider.setMaximum(5)
         self.slider.setValue(1)
         layout.addWidget(self.slider)
+        
 
         # BOTÓN PARA PROCESAR
         process_button = QPushButton(_("Verificar"))
         process_button.clicked.connect(self.process)
         layout.addWidget(process_button)
+        process_button.setStyleSheet("background-color: #884DFF; color: white; font-weight: bold; font-size:15px")
 
         # CREAR UN WIDGET TIPO LIENZO PARA MOSTRAR LA IMAGEN
         self.scene = QGraphicsScene()
@@ -136,68 +146,47 @@ class Interface(QMainWindow):
         layout.addWidget(self.picture_label)
 
     def process_word(self, word):
-
         current_status = self.automata.get_initial_status()
-
         self.update_nodes(current_status)
-
         for symbols in word:
-
             if (current_status, symbols) in self.automata.get_transitions():
-
                 self.update_edges(current_status, self.automata.get_transitions()[(current_status, symbols)])
                 current_status = self.automata.get_transitions()[(current_status, symbols)]
                 self.update_nodes(current_status)
-
             else:
-
                 return False
-
         return current_status in self.automata.get_final_status()
 
     def process(self):
-
         if self.process_word(self.string_linee.text()):
-
             self.process_voice(self.traduction("La palabra es aceptada"))
             QMessageBox.information(self, self.traduction("Resultado"), self.traduction("La palabra es aceptada"))
-
         else:
-
             self.process_voice(self.traduction("La palabra no es aceptada"))
             QMessageBox.warning(self, self.traduction("Resultado"), self.traduction("La palabra no es aceptada"))
 
 
     def generate_edges(self):
-
         edges = set()
-
         for key in self.automata.get_transitions():
-
             edges.add((key[0], self.automata.get_transitions()[key], key[1]))
-
         return edges
 
     def update_nodes(self, status):
-
         nx.draw(self.graph, self.automata.get_position(), with_labels = True, node_color = ['blue' if node == status else 'red' for node in self.graph.nodes()])
         self.draw_labes()
-
         plt.savefig('output.png', dpi = 300, format = 'png', bbox_inches = 'tight')
         self.update_picture()
-
         plt.pause(1 / self.slider.value())
-
+        
     def update_edges(self, initial_status, final_status):
-
         nx.draw(self.graph, self.automata.get_position(), with_labels = True, node_color = "red")
         nx.draw_networkx_edges(self.graph, self.automata.get_position(), edgelist = {(initial_status, final_status)}, edge_color = "blue")
-
+        
         # OBTIENE EL PESO DE CADA ARISTA
         weight = nx.get_edge_attributes(self.graph, 'weight')
         # DIBUJA EL GRAFO CON LOS PESOS DE CADA ARISTA
         nx.draw_networkx_edge_labels(self.graph, self.automata.get_position(), edge_labels = weight)
-
         nx.draw_networkx_edge_labels(self.graph, self.automata.get_position(), edge_labels = {(initial_status, final_status): weight[(initial_status, final_status)]}, font_color = "blue")
 
         plt.savefig('output.png', dpi = 300, format = 'png', bbox_inches ='tight')
@@ -206,60 +195,44 @@ class Interface(QMainWindow):
         plt.pause(1 / self.slider.value())
 
     def draw_labes(self):
-
         # OBTIENE EL PESO DE CADA ARISTA
         weight = nx.get_edge_attributes(self.graph, 'weight')
         # DIBUJA EL GRAFO CON LOS PESOS DE CADA ARISTA
         nx.draw_networkx_edge_labels(self.graph, self.automata.get_position(), edge_labels = weight)
 
     def update_picture(self):
-
         pixmap = QPixmap("output.png")
         item = self.scene.addPixmap(pixmap)
         item.setPos(0, 0)
-
         self.canvas.fitInView(item)
 
     def process_voice(self, texto):
-
         objeto = gTTS(text = texto, lang = self.get_language(), slow = False)
         objeto.save("mensaje.mp3")
-
         playsound("mensaje.mp3", block = False)
-
+        playsound("mensaje.mp3", block=True)
         os.remove("mensaje.mp3")
 
     def change_language(self, language):
-
         if language == 'en':
             self.ingles_action.setChecked(True)
             locale = 'en'
-
         elif language == 'pt':
             self.portugues_action.setChecked(True)
             locale = 'pt'
-
         else:
             self.espanol_action.setChecked(True)
             locale = 'es'
-
         gettext.install('mensajes', localedir, names=("ngettext",))
         gettext.translation('mensajes', localedir, languages=[locale]).install()
-
         self.create_interface(locale)
 
     def get_language(self):
-
         if self.ingles_action.isChecked():
-
             return 'en'
-
         elif self.portugues_action.isChecked():
-
             return 'pt'
-
         elif self.espanol_action.isChecked():
-
             return 'es'
 
     def traduction(self, mensaje):
@@ -267,7 +240,6 @@ class Interface(QMainWindow):
         translations = gettext.translation('mensajes', localedir, languages=[language])
         translations.install()
         _ = translations.gettext
-
         return _(mensaje)
 
     def language_text_update(self):
